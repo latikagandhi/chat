@@ -25,10 +25,9 @@ def get_rooms(input_data, user_id):
 
 
 def get_messages(input_data):
-    # import pdb;pdb.set_trace()
+    input_data = json.loads(input_data)
     page = input_data.get('page', 1)
     page_size = input_data.get('page_size', 10)
-    # room = ChatRoom.objects(id=input_data['room']).get().to_json()
     room = ChatRoom.objects(id=input_data['room']).get().to_json()
     if not room['is_group']:
         if room['participants']:
@@ -38,11 +37,6 @@ def get_messages(input_data):
             else:
                 room['name'] = room['participants'][0]['email']
                 room['image'] = room['participants'][0]['profile_image']
-    # import pdb;
-    # pdb.set_trace()
-    # messages = Message.objects(recipients__room=input_data['room'])
-    
-
 
     unread_count = Message.objects(recipients__room=room['id'], recipients__is_read=False,
                                    recipients__recipient__user_id=input_data['user_id']).count()
@@ -63,7 +57,7 @@ def get_messages(input_data):
                 "page" : messages_pagination.page,
                 "page_size" : messages_pagination.per_page,
                 "total_pages" : messages_pagination.pages,
-                "total_number_of_items" : messages_pagination.total
+                "total_items" : messages_pagination.total
             },
             },
         status=HTTP_200_OK)
