@@ -10,6 +10,9 @@ chat/__pycache__/views.cpython-36.pyc
 nohup.out
 # Distribution / packaging
 .Python
+.history/
+dump/
+.vscode/
 build/
 develop-eggs/
 dist/
