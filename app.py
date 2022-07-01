@@ -91,9 +91,7 @@ def get_flask_app(config: dict = None) -> app.Flask:
 
     return flask_app
 
-
-if __name__ == '__main__':
-    # Main entry point when run in stand-alone mode.
+def run():
     app = get_flask_app()
     create_socketio(app)
     socketio.run(app, host=os.environ.get('HOST'), port=os.environ.get('PORT'), debug=True)
