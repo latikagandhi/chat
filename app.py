@@ -94,4 +94,4 @@ def get_flask_app(config: dict = None) -> app.Flask:
 def run():
     app = get_flask_app()
     create_socketio(app)
-    socketio.run(app, host=os.environ.get('HOST'), port=os.environ.get('PORT'), debug=True)
+    socketio.run(app, host=os.environ.get('HOST'), port=os.environ.get('PORT'), debug=True if os.environ.get("DEBUG", "True") == "True" else False)
