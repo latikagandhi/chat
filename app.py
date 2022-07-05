@@ -80,9 +80,9 @@ def get_flask_app(config: dict = None) -> app.Flask:
 #                                                'retryWrites': False}
 
     # init api and routes
-    api = Api(app=flask_app)
-    from chat.routes import create_chat_routes
-    create_chat_routes(api=api)
+    # api = Api(app=flask_app)
+    # from chat.routes import create_chat_routes
+    # create_chat_routes(api=api)
     db.init_app(flask_app)
 
     mail.init_app(flask_app)
@@ -91,7 +91,13 @@ def get_flask_app(config: dict = None) -> app.Flask:
 
     return flask_app
 
-def run():
-    app = get_flask_app()
-    create_socketio(app)
-    socketio.run(app, host=os.environ.get('HOST'), port=os.environ.get('PORT'), debug=True if os.environ.get("DEBUG", "True") == "True" else False)
+app = get_flask_app()
+create_socketio(app)
+
+if __name__ == "__main__":
+    socketio.run(
+        app,
+        host=os.environ.get("HOST"),
+        port=os.environ.get("PORT"),
+        debug=True if os.environ.get("DEBUG", "True") == "True" else False,
+    )

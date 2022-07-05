@@ -18,15 +18,15 @@ from utils.services.email_service import send_chat_notification
 @socketio.on('connected')
 def connect(data):
 #    import pdb;pdb.set_trace()
-    print('INSIDE CONNECTION -------------------------------------------------------------------------------------', 'CONNECTION ID', data['user']['user_id'])
+    # print('INSIDE CONNECTION -------------------------------------------------------------------------------------', 'CONNECTION ID', data['user']['user_id'])
     if not check_if_sid_exists(data):
         session.chat_clients[request.sid] = {
             'sid': request.sid,
             'user': data['user']
         }
-    print('client_data', data)
-    print(request.sid, 'SIDDDDDDDDDDDDDDDD')
-    print('==========================================================================================================',
+    # print('client_data', data)
+    # print(request.sid, 'SIDDDDDDDDDDDDDDDD')
+    # print('==========================================================================================================',
           session.chat_clients)
 
 
@@ -34,7 +34,7 @@ def connect(data):
 def disconnect():
     try:
         user_offline = session.chat_clients[request.sid]
-        print('INSIDE DISCONNECT -------------------------------------------------------------------------------------', 'CONNECTION ID', user_offline)
+        # print('INSIDE DISCONNECT -------------------------------------------------------------------------------------', 'CONNECTION ID', user_offline)
         del (session.chat_clients[request.sid])
         ChatRoom.objects(participants__user_id=user_offline['user_id']).update(
             set__participants__S__last_seen=datetime.now())
@@ -53,7 +53,7 @@ def check_if_sid_exists(data):
 
 @socketio.on('get_chats')
 def get_chats(data):
-    print('INSIDE GET CHATS -------------------------------------------------------------------------------------')
+    # print('INSIDE GET CHATS -------------------------------------------------------------------------------------')
     user = data['user']
     # import pdb;pdb.set_trace()
     chats = get_rooms(data, user['user_id'])
@@ -70,7 +70,7 @@ def get_chats(data):
 
 @socketio.on('get_messages')
 def get_chats(data):
-    print('INSIDE GET MESSAGES -------------------------------------------------------------------------------------')
+    # print('INSIDE GET MESSAGES -------------------------------------------------------------------------------------')
     # user = data['user']
     # import pdb;pdb.set_trace()
     response = get_messages(data)
@@ -79,7 +79,7 @@ def get_chats(data):
 
 @socketio.on('typing_start')
 def typing_start(data):
-    print('INSIDE TYPING START -------------------------------------------------------------------------------------')
+    # print('INSIDE TYPING START -------------------------------------------------------------------------------------')
     chat_room = ChatRoom.objects(id=data['room']).get()
     clients = get_chat_clients(chat_room)
     for cl in clients:
@@ -88,7 +88,7 @@ def typing_start(data):
 
 @socketio.on('typing_end')
 def typing_start(data):
-    print('INSIDE TYPING END -------------------------------------------------------------------------------------')
+    # print('INSIDE TYPING END -------------------------------------------------------------------------------------')
     chat_room = ChatRoom.objects(id=data['room']).get()
     clients = get_chat_clients(chat_room)
     for cl in clients:
@@ -98,8 +98,8 @@ def typing_start(data):
 @socketio.on("new_room_create")
 def create_new_channel(data):
 #    import pdb;pdb.set_trace()
-    print('INSIDE NEW CHANNEL -------------------------------------------------------------------------------------')
-    # print(data)
+    # print('INSIDE NEW CHANNEL -------------------------------------------------------------------------------------')
+    # # print(data)
     """ Checks whether a channel can be created. If so, this updates the
         channel list and broadcasts the new channel.
     """
@@ -132,16 +132,16 @@ def create_new_channel(data):
         chat_room.participants = participants
         chat_room.save()
     clients = get_chat_clients(chat_room)
-    print(request.sid)
-    print(clients, 'llllllllllllllllllllllllllllllllllllllllllllllll', clients)
+    # print(request.sid)
+    # print(clients, 'llllllllllllllllllllllllllllllllllllllllllllllll', clients)
     for cl in clients:
         emit("add_room", {"channel": chat_room.to_json()}, broadcast=True, room=cl['sid'])
 
 
 @socketio.on("new_message")
 def new_message(data):
-    print('INSIDE NEW MESSAGE -------------------------------------------------------------------------------------')
-    # print(data)
+    # print('INSIDE NEW MESSAGE -------------------------------------------------------------------------------------')
+    # # print(data)
     """ Processes the new message and stores it into the server list of
         messages given the room name. Broadcast the room and message.
     """
@@ -176,12 +176,12 @@ def new_message(data):
     # try:
     #     send_email_notification(room_data, message.message_body, user.email)
     # except Exception as e:
-    #     print(e)
+    #     # print(e)
 
     # import pdb;pdb.set_trace()
-    print(request.sid)
+    # print(request.sid)
     clients = get_chat_clients(room_data)
-    print(clients, 'clientssssssssssssssssss==============$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n\n\n')
+    # print(clients, 'clientssssssssssssssssss==============$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n\n\n')
     # import pdb;pdb.set_trace()
     #
     for cl in clients:
@@ -191,7 +191,7 @@ def new_message(data):
 
 @socketio.on('online_status')
 def online_status(data):
-    print('INSIDE ONLINE STATUS -------------------------------------------------------------------------------------')
+    # print('INSIDE ONLINE STATUS -------------------------------------------------------------------------------------')
     rooms = ChatRoom.objects(participants__user_id__contains=data['user_id']).select_related(3)
     online_users = list()
     already_present_user_list = list()
@@ -203,14 +203,14 @@ def online_status(data):
                     if participant.user_id not in already_present_user_list:
                         online_users.append(participant.to_json())
                         already_present_user_list.append(participant.user_id)
-    # print('online_users------====================================', online_users)
+    # # print('online_users------====================================', online_users)
     emit("online_status_show", online_users, broadcast=False)
 
 
 @socketio.on('read_status')
 def read_status(data):
     # import pdb;pdb.set_trace()
-    print('INSIDE READ STATUS -------------------------------------------------------------------------------------')
+    # print('INSIDE READ STATUS -------------------------------------------------------------------------------------')
     chat_room = ChatRoom.objects(id=data['room']).get()
     if 'message' in data:
         read_message = Message.objects(id=data['message'], recipients__recipient=data['user_id'])
@@ -232,7 +232,7 @@ def read_status(data):
                 message.update(set__recipients__1__is_read=True)
                 read_message.append(message)
     clients = get_chat_clients(chat_room)
-    print(clients, 'clientssssssssssssssssss')
+    # print(clients, 'clientssssssssssssssssss')
     for cl in clients:
         emit("read_status_show",
              {'data': [message.to_json()['id'] for message in read_message]}, broadcast=False,
@@ -255,11 +255,11 @@ def get_chat_clients(room_data):
     clients = []
 
     for participant in room_data.participants:
-        print(participant.user_id)
+        # print(participant.user_id)
         for key, value in session.chat_clients.items():
             if str(participant.user_id) == value['user']['user_id']:
                 clients.append({'sid': key, 'user_id': value['user']['user_id']})
-    print(clients)
+    # print(clients)
     return clients
 
 
