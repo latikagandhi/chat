@@ -27,7 +27,7 @@ def connect(data):
     # print('client_data', data)
     # print(request.sid, 'SIDDDDDDDDDDDDDDDD')
     # print('==========================================================================================================',
-          session.chat_clients)
+    #     session.chat_clients)
 
 
 @socketio.on('disconnect')
@@ -97,9 +97,7 @@ def typing_start(data):
 
 @socketio.on("new_room_create")
 def create_new_channel(data):
-#    import pdb;pdb.set_trace()
     # print('INSIDE NEW CHANNEL -------------------------------------------------------------------------------------')
-    # # print(data)
     """ Checks whether a channel can be created. If so, this updates the
         channel list and broadcasts the new channel.
     """

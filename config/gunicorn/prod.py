@@ -1,11 +1,10 @@
 """Gunicorn *production* config file"""
 
-import multiprocessing
 
 # Django WSGI application path in pattern MODULE_NAME:VARIABLE_NAME
 wsgi_app = "app:app"
 # The number of worker processes for handling requests
-workers = multiprocessing.cpu_count() * 2 + 1
+workers = 2
 worker_class = "eventlet"
 # The socket to bind
 bind = "0.0.0.0:5050"
